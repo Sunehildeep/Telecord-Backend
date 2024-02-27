@@ -6,8 +6,10 @@ app = Chalice(app_name='AwsServices')
 
 # Calling the DynamoDB class to create the table
 dynamo_resource = boto3.resource('dynamodb')
-DynamoDB(dynamo_resource)
+dynamo_db = DynamoDB(dynamo_resource)
 
-@app.route('/', methods=['GET'], cors=True)
+@app.route('/addCommunity', methods=['POST'], cors=True)
 def index():
-    return {'hello': 'world'}
+    request = app.current_request
+    dynamo_db.putCommunity(request.json_body)
+    return {'message': 'Community added successfully!'}

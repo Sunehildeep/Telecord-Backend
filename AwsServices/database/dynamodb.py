@@ -24,3 +24,6 @@ class DynamoDB:
             print(f"Table {table_name} was created successfully!")
         else:
             print(f"Table {table_name} already exists.")
+
+    def putCommunity(self, community):
+        return self.community_table.put_community(community)

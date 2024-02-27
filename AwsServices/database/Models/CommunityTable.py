@@ -37,9 +37,22 @@ class CommunityTable:
         except ClientError as e:
             if e.response['Error']['Code'] == 'ResourceInUseException':
                 # Table already exists, return None
+                self.table = self.dyn_resource.Table(table_name)
                 return None
             else:
                 # Unexpected error, re-raise
                 raise
         else:
             return self.table
+        
+    def put_community(self, community):
+        """
+        Adds a new community to the table.
+        
+        :param community: A dictionary with the community data.
+        :return: The response from the put_item call.
+        """
+        if not self.table:
+            self.create_table('Communities')
+        response = self.table.put_item(Item=community)
+        return response

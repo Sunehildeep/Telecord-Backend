@@ -4,12 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-chalice = "*"
 boto3 = "*"
-python-dotenv = "*"
+chalice = "*"
+logger = "*"
 
 [dev-packages]
 
 [requires]
 python_version = "3.11"
-python_full_version = "3.11.5"
