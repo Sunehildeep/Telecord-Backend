@@ -27,3 +27,6 @@ class DynamoDB:
 
     def putCommunity(self, community):
         return self.community_table.put_community(community)
+    
+    def getCommunity(self, user_name):
+        return self.community_table.get_community(user_name)

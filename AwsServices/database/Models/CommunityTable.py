@@ -1,4 +1,5 @@
 from botocore.exceptions import ClientError
+from boto3.dynamodb.conditions import Attr
 
 class CommunityTable:
     def __init__(self, dyn_resource):
@@ -52,7 +53,19 @@ class CommunityTable:
         :param community: A dictionary with the community data.
         :return: The response from the put_item call.
         """
-        if not self.table:
-            self.create_table('Communities')
         response = self.table.put_item(Item=community)
         return response
+    
+    def get_community(self, username):
+        """
+        Retrieves community details when the username is present in the GroupMembers list.
+
+        :param username: The username of the user.
+        :return: A list of community details where the user is a member.
+        """
+        response = self.table.scan(
+            FilterExpression=Attr("GroupMembers").contains(username)
+        )
+        communities = response.get("Items", [])
+        return communities
+
