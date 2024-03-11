@@ -1,16 +1,19 @@
-from flask import Flask, render_template, request, session, redirect, url_for
-from flask_socketio import SocketIO, emit, join_room, leave_room, send
-import random
-from string import ascii_uppercase
-import dotenv
+from flask import Flask, render_template
+from flask_socketio import SocketIO
+import os
+from dotenv import load_dotenv
 
-dotenv.load_dotenv()
+load_dotenv()
 
-secretKey = dotenv.get_key("SECRET_KEY")
+secretKey = os.getenv("SECRET_KEY")
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = secretKey
-socketio = SocketIO(app)
+socketio = SocketIO(app, cors_allowed_origins="http://localhost:3000", cors_allowed_methods=["GET", "POST"], cors_allowed_headers="*")
+
+@socketio.on('message_send')
+def handle_message(data):
+    print('received message: ' + data)
 
 
 if __name__ == '__main__':
