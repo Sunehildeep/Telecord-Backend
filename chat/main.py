@@ -6,10 +6,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 secretKey = os.getenv("SECRET_KEY")
+FE_URL = os.getenv("FE_URL")
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = secretKey
-socketio = SocketIO(app, cors_allowed_origins="http://localhost:3000", cors_allowed_methods=["GET", "POST"], cors_allowed_headers="*")
+socketio = SocketIO(app, cors_allowed_origins=FE_URL , cors_allowed_methods=["GET", "POST"], cors_allowed_headers="*")
 
 @socketio.on('message_send')
 def handle_message(data):
