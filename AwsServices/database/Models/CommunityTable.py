@@ -53,6 +53,7 @@ class CommunityTable:
         :param community: A dictionary with the community data.
         :return: The response from the put_item call.
         """
+        print(community)
         response = self.table.put_item(Item=community)
         return response
     

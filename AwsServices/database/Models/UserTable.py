@@ -43,3 +43,21 @@ class UserTable:
                 raise
         else:
             return self.table
+        
+    def sign_up(self, user_data):
+        try:
+            print("Checkinh: ",user_data)
+            self.table.put_user(Item=user_data)
+            return {'message': 'User signed up successfully!'}
+        except Exception as e:
+            return {'error': str(e)}
+    
+    def login(self, user_data):
+        try:
+            response = self.table.get_item(Key={'UserId': user_data['UserId']})
+            if 'Item' in response:
+                return {'message': 'User logged in successfully!'}
+            else:
+                return {'error': 'Invalid credentials!'}
+        except Exception as e:
+            return {'error': str(e)}

@@ -30,3 +30,9 @@ class DynamoDB:
     
     def getCommunity(self, user_name):
         return self.community_table.get_community(user_name)
+    
+    def signUp(self, user_data):
+        return self.user_table.sign_up(user_data)
+    
+    def login(self, user_data):
+        return self.user_table.login(user_data)
