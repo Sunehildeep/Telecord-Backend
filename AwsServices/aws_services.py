@@ -15,3 +15,12 @@ class AWSServices:
 
         self.translation = TranslationService()
         self.voice_over = VoiceOver()
+
+    def translate_text(self, text, source_language, target_language):
+        return self.translation.translate_text(text, source_language, target_language)
+    
+    def upload_file(self, file_bytes, file_name):
+        return self.storage_service.upload_file(file_bytes, file_name)
+    
+    def audio(self, text):
+        return self.voice_over.voice_over(text)
