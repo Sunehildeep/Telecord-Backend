@@ -31,6 +31,18 @@ class DynamoDB:
 
     def getCommunity(self, user_name):
         return self.community_table.get_community(user_name)
+    
+    def getCommunityById(self, community_id):
+        return self.community_table.get_community_by_id(community_id)
+    
+    def update_profile(self, user_data):
+        return self.user_table.update_profile(user_data)
+    
+    def search_users(self, query, pageNumber):
+        return self.user_table.search_users(query, pageNumber)
+    
+    def delete_user(self, user_data):
+        return self.user_table.delete_user(user_data)
 
     def signUp(self, user_data):
         return self.user_table.sign_up(user_data)

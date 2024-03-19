@@ -42,6 +42,28 @@ def get_community(user_name):
     return dynamo_db.getCommunity(user_name)
 
 
+@app.route('/getCommunityById/{community_id}', methods=['GET'], cors=True)
+def get_community_by_id(community_id):
+    return dynamo_db.getCommunityById(community_id)
+
+
+@app.route('/updateUserProfile', methods=['PUT'], cors=True)
+def update_profile():
+    request = app.current_request
+    return dynamo_db.update_profile(request.json_body)
+
+
+@app.route('/searchUsers', methods=['GET'], cors=True)
+def search_users(query, pageNumber):
+    return dynamo_db.search_users(query, pageNumber)
+
+
+@app.route('/deleteUser', methods=['DELETE'], cors=True)
+def delete_user():
+    request = app.current_request
+    return dynamo_db.delete_user(request.json_body)
+
+
 @app.route('/joinCommunity', methods=['GET'], cors=True)
 def join_community():
     # requires a user_name and community_id
