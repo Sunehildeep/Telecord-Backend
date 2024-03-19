@@ -70,6 +70,17 @@ class CommunityTable:
         communities = response.get("Items", [])
         return communities
     
+    def get_community_by_id(self, community_id):
+        """
+        Retrieves community details when the community_id is present in the table.
+
+        :param community_id: The ID of the community.
+        :return: The community details.
+        """
+        response = self.table.get_item(Key={"CommunityId": community_id})
+        community = response.get("Item", {})
+        return community
+    
     def join_community(self, data):
         """
         Adds a user to a community.

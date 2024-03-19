@@ -65,3 +65,41 @@ class UserTable:
                 return {'error': 'Invalid credentials!'}
         except Exception as e:
             return {'error': str(e)}
+        
+    def update_profile(self, user_data):
+        try:
+            response = self.table.update_item(
+                Key={'Email': user_data['Email'], 'Password': user_data['Password']},
+                UpdateExpression="set FirstName=:f, LastName=:l, ProfilePic=:p",
+                ExpressionAttributeValues={
+                    ':f': user_data['FirstName'],
+                    ':l': user_data['LastName'],
+                    ':p': user_data['ProfilePic']
+                },
+                ReturnValues='UPDATED_NEW')
+            
+            if "Attributes" in response:
+                return {'message': 'Profile updated successfully!'}
+            else:
+                return {'error': 'Profile not updated!'}
+        except Exception as e:
+            return {'error': str(e)}
+        
+    def search_users(self, query, pageNumber):
+        try:
+            response = self.table.scan(
+                FilterExpression="contains(FirstName, :query) or contains(LastName, :query)",
+                ExpressionAttributeValues={":query": query}
+            )
+            users = response.get("Items", [])
+            return users
+        except Exception as e:
+            return {'error': str(e)}
+        
+    def delete_user(self, user_data):
+        try:
+            response = self.table.delete_item(
+                Key={'Email': user_data['Email'], 'Password': user_data['Password']})
+            return {'message': 'User deleted successfully!'}
+        except Exception as e:
+            return {'error': str(e)}
