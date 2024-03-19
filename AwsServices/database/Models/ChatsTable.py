@@ -1,5 +1,6 @@
 from botocore.exceptions import ClientError
 
+
 class ChatsTable:
     def __init__(self, dyn_resource):
         """
@@ -37,6 +38,7 @@ class ChatsTable:
         except ClientError as e:
             if e.response['Error']['Code'] == 'ResourceInUseException':
                 # Table already exists, return None
+                self.table = self.dyn_resource.Table(table_name)
                 return None
             else:
                 # Unexpected error, re-raise

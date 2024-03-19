@@ -1,5 +1,6 @@
 from botocore.exceptions import ClientError
 
+
 class UserTable:
     def __init__(self, dyn_resource):
         """
@@ -23,10 +24,12 @@ class UserTable:
             self.table = self.dyn_resource.create_table(
                 TableName=table_name,
                 KeySchema=[
-                    {"AttributeName": "UserId", "KeyType": "HASH"},  # Partition key
+                    {"AttributeName": "Email", "KeyType": "HASH"},
+                    {"AttributeName": "Password", "KeyType": "RANGE"}
                 ],
                 AttributeDefinitions=[
-                    {"AttributeName": "UserId", "AttributeType": "N"},
+                    {"AttributeName": "Email", "AttributeType": "S"},
+                    {"AttributeName": "Password", "AttributeType": "S"}
                 ],
                 ProvisionedThroughput={
                     "ReadCapacityUnits": 10,
@@ -37,24 +40,25 @@ class UserTable:
         except ClientError as e:
             if e.response['Error']['Code'] == 'ResourceInUseException':
                 # Table already exists, return None
+                self.table = self.dyn_resource.Table(table_name)
                 return None
             else:
                 # Unexpected error, re-raise
                 raise
         else:
             return self.table
-        
+
     def sign_up(self, user_data):
         try:
-            print("Checkinh: ",user_data)
-            self.table.put_user(Item=user_data)
+            self.table.put_item(Item=user_data)
             return {'message': 'User signed up successfully!'}
         except Exception as e:
             return {'error': str(e)}
-    
+
     def login(self, user_data):
         try:
-            response = self.table.get_item(Key={'UserId': user_data['UserId']})
+            response = self.table.get_item(
+                Key={'Email': user_data['Email'], 'Password': user_data['Password']})
             if 'Item' in response:
                 return {'message': 'User logged in successfully!'}
             else:
