@@ -84,4 +84,19 @@ class CommunityTable:
             ReturnValues="UPDATED_NEW",
         )
         return response
+    
+    def leave_community(self, data):
+        """
+        Removes a user from a community.
+
+        :param data: A dictionary with the user and community details.
+        :return: The response from the update_item call.
+        """
+        response = self.table.update_item(
+            Key={"CommunityId": data["community_id"]},
+            UpdateExpression="DELETE GroupMembers :user",
+            ExpressionAttributeValues={":user": {data["user_name"]}},
+            ReturnValues="UPDATED_NEW",
+        )
+        return response
 
