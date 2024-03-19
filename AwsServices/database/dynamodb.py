@@ -2,7 +2,6 @@ from database.Models.UserTable import UserTable
 from database.Models.CommunityTable import CommunityTable
 from database.Models.ChatsTable import ChatsTable
 
-
 class DynamoDB:
     def __init__(self, resource):
         self.dynamo_resource = resource
@@ -41,3 +40,6 @@ class DynamoDB:
     
     def join_community(self, data):
         return self.community_table.join_community(data)
+    
+    def leave_community(self, data):
+        return self.community_table.leave_community(data)

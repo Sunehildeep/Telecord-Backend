@@ -13,6 +13,33 @@ class StorageService:
         self.client = boto3.client('s3')
         self.bucket_name = storage_location
 
+    def create_bucket(self, bucket_name):
+        """
+        It is creating a bucket in the storage service
+        """
+        try:
+            self.client.create_bucket(Bucket=bucket_name)
+        except Exception as e:
+            logging.error(e)
+            print(e)
+            return False
+        return True
+
+    def bucket_exists(self, bucket_name):
+        """
+        It is checking if the bucket exists or not
+        """
+        try:
+            response = self.client.list_buckets()
+            for bucket in response['Buckets']:
+                if bucket['Name'] == bucket_name:
+                    return True
+            return False
+        except Exception as e:
+            logging.error(e)
+            print(e)
+            return False
+
     def get_storage_location(self):
         return self.bucket_name
 
