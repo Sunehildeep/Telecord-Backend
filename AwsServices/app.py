@@ -8,7 +8,14 @@ app = Chalice(app_name='AwsServices')
 # Calling the DynamoDB class to create the table
 dynamo_resource = boto3.resource('dynamodb')
 dynamo_db = DynamoDB(dynamo_resource)
+
+# Calling the AWSServices
 aws_services = AWSServices()
+
+############################################################################################################
+# Routes
+############################################################################################################
+
 
 @app.route('/sign-up', methods=['POST'], cors=True)
 def sign_up():
@@ -34,11 +41,13 @@ def index():
 def get_community(user_name):
     return dynamo_db.getCommunity(user_name)
 
+
 @app.route('/joinCommunity', methods=['GET'], cors=True)
 def join_community():
     # requires a user_name and community_id
     request = app.current_request
     return dynamo_db.join_community(request.json_body)
+
 
 @app.route('/leaveCommunity', methods=['GET'], cors=True)
 def leave_community():
@@ -50,3 +59,21 @@ def leave_community():
     print(request)
     return dynamo_db.leave_community(request)
 
+
+@app.route('/translate', methods=['POST'], cors=True)
+def translate():
+    # requires a text, lang, and source lang
+    request = app.current_request
+    return aws_services.translate_text(request.json_body['translated_text'], request.json_body['source_lang'], request.json_body['target_lang'])
+
+
+@app.route('/upload', methods=['POST'], cors=True)
+def upload():
+    request = app.current_request
+    return aws_services.upload_file(request.json_body['file_bytes'], request.json_body['file_name'])
+
+
+@app.route('/audio', methods=['POST'], cors=True)
+def audio():
+    request = app.current_request
+    return aws_services.audio(request.json_body['text'])
