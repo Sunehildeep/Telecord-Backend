@@ -38,3 +38,6 @@ class DynamoDB:
 
     def login(self, user_data):
         return self.user_table.login(user_data)
+    
+    def join_community(self, data):
+        return self.community_table.join_community(data)

@@ -32,3 +32,10 @@ def index():
 @app.route('/getCommunity/{user_name}', methods=['GET'], cors=True)
 def get_community(user_name):
     return dynamo_db.getCommunity(user_name)
+
+
+@app.route('/joinCommunity', methods=['GET'], cors=True)
+def join_community():
+    # requires a user_name and community_id
+    request = app.current_request
+    return dynamo_db.join_community(request.json_body)
