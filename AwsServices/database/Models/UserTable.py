@@ -1,4 +1,5 @@
 from botocore.exceptions import ClientError
+from chalice import Response
 
 
 class UserTable:
@@ -24,12 +25,10 @@ class UserTable:
             self.table = self.dyn_resource.create_table(
                 TableName=table_name,
                 KeySchema=[
-                    {"AttributeName": "Email", "KeyType": "HASH"},
-                    {"AttributeName": "Password", "KeyType": "RANGE"}
+                    {"AttributeName": "Email", "KeyType": "HASH"}
                 ],
                 AttributeDefinitions=[
-                    {"AttributeName": "Email", "AttributeType": "S"},
-                    {"AttributeName": "Password", "AttributeType": "S"}
+                    {"AttributeName": "Email", "AttributeType": "S"}
                 ],
                 ProvisionedThroughput={
                     "ReadCapacityUnits": 10,
@@ -51,25 +50,30 @@ class UserTable:
     def sign_up(self, user_data):
         try:
             self.table.put_item(Item=user_data)
-            return {'message': 'User signed up successfully!'}
+            return Response(body={'message': 'User signed up successfully!'}, status_code=201)
         except Exception as e:
             return {'error': str(e)}
 
     def login(self, user_data):
         try:
             response = self.table.get_item(
-                Key={'Email': user_data['Email'], 'Password': user_data['Password']})
+                Key={'Email': user_data['Email']})
             if 'Item' in response:
-                return {'message': 'User logged in successfully!'}
+                # Compare the password
+                if response['Item']['Password'] == user_data['Password']:
+                    return Response(body={'user': response['Item'], 'message': 'User logged in successfully!'}, status_code=200)
+                else:
+                    return Response(body={'error': 'Invalid credentials!'}, status_code=401)
             else:
-                return {'error': 'Invalid credentials!'}
+                return Response(body={'error': 'Invalid credentials!'}, status_code=401)
         except Exception as e:
             return {'error': str(e)}
-        
+
     def update_profile(self, user_data):
         try:
             response = self.table.update_item(
-                Key={'Email': user_data['Email'], 'Password': user_data['Password']},
+                Key={'Email': user_data['Email'],
+                     'Password': user_data['Password']},
                 UpdateExpression="set FirstName=:f, LastName=:l, ProfilePic=:p",
                 ExpressionAttributeValues={
                     ':f': user_data['FirstName'],
@@ -77,14 +81,26 @@ class UserTable:
                     ':p': user_data['ProfilePic']
                 },
                 ReturnValues='UPDATED_NEW')
-            
+
             if "Attributes" in response:
-                return {'message': 'Profile updated successfully!'}
+                return Response(body={'message': 'Profile updated successfully!'}, status_code=200)
             else:
-                return {'error': 'Profile not updated!'}
+                return Response(body={'error': 'Invalid credentials!'}, status_code=401)
         except Exception as e:
-            return {'error': str(e)}
-        
+            return Response(body={'error': str(e)}, status_code=500)
+
+    def get_user(self, email):
+        try:
+            response = self.table.get_item(
+                Key={'Email': email})
+            if 'Item' in response:
+                return Response(body={'user': response['Item'], 'message': 'User found!'}, status_code=200)
+            else:
+                return Response(body={'error': 'User not found!'}, status_code=404)
+        except Exception as e:
+            print('Error:', e)
+            return Response(body={'error': str(e)}, status_code=500)
+
     def search_users(self, query, pageNumber):
         try:
             response = self.table.scan(
@@ -94,12 +110,12 @@ class UserTable:
             users = response.get("Items", [])
             return users
         except Exception as e:
-            return {'error': str(e)}
-        
+            return Response(body={'error': str(e)}, status_code=500)
+
     def delete_user(self, user_data):
         try:
             response = self.table.delete_item(
                 Key={'Email': user_data['Email'], 'Password': user_data['Password']})
-            return {'message': 'User deleted successfully!'}
+            return Response(body={'message': 'User deleted successfully!'}, status_code=200)
         except Exception as e:
-            return {'error': str(e)}
+            return Response(body={'error': str(e)}, status_code=500)
