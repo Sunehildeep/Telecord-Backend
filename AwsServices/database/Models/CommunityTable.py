@@ -1,5 +1,7 @@
 from botocore.exceptions import ClientError
 from boto3.dynamodb.conditions import Attr
+from chalice import Response
+
 
 class CommunityTable:
     def __init__(self, dyn_resource):
@@ -10,13 +12,13 @@ class CommunityTable:
         # The table variable is set during the scenario in the call to
         # 'exists' if the table exists. Otherwise, it is set by 'create_table'.
         self.table = None
-    
+
     def create_table(self, table_name):
         """
         Creates an Amazon DynamoDB table that can be used to store movie data.
         The table uses the release year of the movie as the partition key and the
         title as the sort key.
-    
+
         :param table_name: The name of the table to create.
         :return: The newly created table if successful, None if the table already exists.
         """
@@ -24,7 +26,8 @@ class CommunityTable:
             self.table = self.dyn_resource.create_table(
                 TableName=table_name,
                 KeySchema=[
-                    {"AttributeName": "CommunityId", "KeyType": "HASH"},  # Partition key
+                    {"AttributeName": "CommunityId",
+                        "KeyType": "HASH"},  # Partition key
                 ],
                 AttributeDefinitions=[
                     {"AttributeName": "CommunityId", "AttributeType": "N"},
@@ -45,18 +48,18 @@ class CommunityTable:
                 raise
         else:
             return self.table
-        
+
     def put_community(self, community):
         """
         Adds a new community to the table.
-        
+
         :param community: A dictionary with the community data.
         :return: The response from the put_item call.
         """
         print(community)
         response = self.table.put_item(Item=community)
-        return response
-    
+        return Response(body=response, status_code=201)
+
     def get_community(self, username):
         """
         Retrieves community details when the username is present in the GroupMembers list.
@@ -68,8 +71,9 @@ class CommunityTable:
             FilterExpression=Attr("GroupMembers").contains(username)
         )
         communities = response.get("Items", [])
-        return communities
-    
+
+        return Response(body=communities, status_code=200)
+
     def get_community_by_id(self, community_id):
         """
         Retrieves community details when the community_id is present in the table.
@@ -79,8 +83,9 @@ class CommunityTable:
         """
         response = self.table.get_item(Key={"CommunityId": community_id})
         community = response.get("Item", {})
-        return community
-    
+
+        return Response(body=community, status_code=200)
+
     def join_community(self, data):
         """
         Adds a user to a community.
@@ -94,8 +99,9 @@ class CommunityTable:
             ExpressionAttributeValues={":user": [data["user_name"]]},
             ReturnValues="UPDATED_NEW",
         )
-        return response
-    
+
+        return Response(body=response, status_code=200)
+
     def leave_community(self, data):
         """
         Removes a user from a community.
@@ -109,5 +115,5 @@ class CommunityTable:
             ExpressionAttributeValues={":user": {data["user_name"]}},
             ReturnValues="UPDATED_NEW",
         )
-        return response
 
+        return Response(body=response, status_code=200)

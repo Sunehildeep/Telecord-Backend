@@ -2,6 +2,7 @@ from database.Models.UserTable import UserTable
 from database.Models.CommunityTable import CommunityTable
 from database.Models.ChatsTable import ChatsTable
 
+
 class DynamoDB:
     def __init__(self, resource):
         self.dynamo_resource = resource
@@ -31,16 +32,19 @@ class DynamoDB:
 
     def getCommunity(self, user_name):
         return self.community_table.get_community(user_name)
-    
+
     def getCommunityById(self, community_id):
         return self.community_table.get_community_by_id(community_id)
-    
+
     def update_profile(self, user_data):
         return self.user_table.update_profile(user_data)
-    
+
     def search_users(self, query, pageNumber):
         return self.user_table.search_users(query, pageNumber)
-    
+
+    def get_user(self, email):
+        return self.user_table.get_user(email)
+
     def delete_user(self, user_data):
         return self.user_table.delete_user(user_data)
 
@@ -49,9 +53,9 @@ class DynamoDB:
 
     def login(self, user_data):
         return self.user_table.login(user_data)
-    
+
     def join_community(self, data):
         return self.community_table.join_community(data)
-    
+
     def leave_community(self, data):
         return self.community_table.leave_community(data)

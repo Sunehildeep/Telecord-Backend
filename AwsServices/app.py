@@ -27,7 +27,8 @@ def sign_up():
 @app.route('/login', methods=['POST'], cors=True)
 def login():
     request = app.current_request
-    return dynamo_db.login(request.json_body)
+    req = dynamo_db.login(request.json_body)
+    return req
 
 
 @app.route('/addCommunity', methods=['PUT'], cors=True)
@@ -51,6 +52,12 @@ def get_community_by_id(community_id):
 def update_profile():
     request = app.current_request
     return dynamo_db.update_profile(request.json_body)
+
+
+@app.route('/getUser', methods=['POST'], cors=True)
+def get_user():
+    request = app.current_request
+    return dynamo_db.get_user(email=request.json_body['Email'])
 
 
 @app.route('/searchUsers', methods=['GET'], cors=True)
