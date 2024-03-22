@@ -59,3 +59,6 @@ class DynamoDB:
 
     def leave_community(self, data):
         return self.community_table.leave_community(data)
+
+    def searchCommunity(self, query):
+        return self.community_table.search_community(query)

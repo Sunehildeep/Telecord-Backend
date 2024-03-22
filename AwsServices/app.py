@@ -34,8 +34,13 @@ def login():
 @app.route('/addCommunity', methods=['PUT'], cors=True)
 def index():
     request = app.current_request
-    dynamo_db.putCommunity(request.json_body)
-    return {'message': 'Community added successfully!'}
+    return dynamo_db.putCommunity(request.json_body)
+
+
+@app.route('/searchCommunity', methods=['POST'], cors=True)
+def index():
+    request = app.current_request
+    return dynamo_db.searchCommunity(request.json_body['Query'])
 
 
 @app.route('/getCommunity/{user_name}', methods=['GET'], cors=True)
@@ -71,22 +76,16 @@ def delete_user():
     return dynamo_db.delete_user(request.json_body)
 
 
-@app.route('/joinCommunity', methods=['GET'], cors=True)
+@app.route('/joinCommunity', methods=['POST'], cors=True)
 def join_community():
-    # requires a user_name and community_id
     request = app.current_request
     return dynamo_db.join_community(request.json_body)
 
 
-@app.route('/leaveCommunity', methods=['GET'], cors=True)
+@app.route('/leaveCommunity', methods=['POST'], cors=True)
 def leave_community():
-    # requires a user_name and community_id
-    request = {
-        "community_id": 11,
-        "user_name": "ALI"
-    }
-    print(request)
-    return dynamo_db.leave_community(request)
+    request = app.current_request
+    return dynamo_db.leave_community(request.json_body)
 
 
 @app.route('/translate', methods=['POST'], cors=True)

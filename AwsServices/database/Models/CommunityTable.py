@@ -56,7 +56,6 @@ class CommunityTable:
         :param community: A dictionary with the community data.
         :return: The response from the put_item call.
         """
-        print(community)
         response = self.table.put_item(Item=community)
         return Response(body=response, status_code=201)
 
@@ -86,6 +85,20 @@ class CommunityTable:
 
         return Response(body=community, status_code=200)
 
+    def search_community(self, query):
+        """
+        Retrieves community details when the query is present in the table.
+
+        :param query: The query to search for.
+        :return: The community details.
+        """
+        response = self.table.scan(
+            FilterExpression=Attr("CommunityName").contains(query)
+        )
+        communities = response.get("Items", [])
+
+        return Response(body=communities, status_code=200)
+
     def join_community(self, data):
         """
         Adds a user to a community.
@@ -94,9 +107,9 @@ class CommunityTable:
         :return: The response from the update_item call.
         """
         response = self.table.update_item(
-            Key={"CommunityId": data["community_id"]},
+            Key={"CommunityId": data["CommunityId"]},
             UpdateExpression="SET GroupMembers = list_append(GroupMembers, :user)",
-            ExpressionAttributeValues={":user": [data["user_name"]]},
+            ExpressionAttributeValues={":user": [data["Username"]]},
             ReturnValues="UPDATED_NEW",
         )
 
@@ -109,10 +122,21 @@ class CommunityTable:
         :param data: A dictionary with the user and community details.
         :return: The response from the update_item call.
         """
+        # First, retrieve the index of the username in the GroupMembers list
+        community = self.table.get_item(
+            Key={"CommunityId": data["CommunityId"]})
+        group_members = community.get("Item", {}).get("GroupMembers", [])
+
+        try:
+            index = group_members.index(data["Username"])
+        except ValueError:
+            print("User not found in the community")
+            return Response(body={"message": "User not found in the community"}, status_code=404)
+
+        # Now, remove the user from the GroupMembers list using the retrieved index
         response = self.table.update_item(
-            Key={"CommunityId": data["community_id"]},
-            UpdateExpression="DELETE GroupMembers :user",
-            ExpressionAttributeValues={":user": {data["user_name"]}},
+            Key={"CommunityId": data["CommunityId"]},
+            UpdateExpression="REMOVE GroupMembers[%s]" % index,
             ReturnValues="UPDATED_NEW",
         )
 
