@@ -10,7 +10,8 @@ class StorageService:
         """
         It is taking the storage location as an argument and initializing the boto3 client
         """
-        self.client = boto3.client('s3')
+        self.client = boto3.client('s3', aws_access_key_id='AKIA4MTWGWVBKGMRIBZA',
+                                   aws_secret_access_key='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')
         self.bucket_name = storage_location
 
     def create_bucket(self, bucket_name):

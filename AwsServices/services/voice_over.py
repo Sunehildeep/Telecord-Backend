@@ -5,8 +5,10 @@ class VoiceOver(object):
     """
     This class is used to convert text to speech using AWS Polly
     """
+
     def __init__(self):
-        self.client = boto3.client('polly')
+        self.client = boto3.client('polly', aws_access_key_id='AKIA4MTWGWVBKGMRIBZA',
+                                   aws_secret_access_key='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')
 
     def voice_over(self, text, voice_id='Joanna', output_format='mp3'):
         """

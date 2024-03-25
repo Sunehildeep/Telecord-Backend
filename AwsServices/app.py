@@ -6,8 +6,7 @@ from aws_services import AWSServices
 app = Chalice(app_name='AwsServices')
 
 # Calling the DynamoDB class to create the table
-dynamo_resource = boto3.resource('dynamodb')
-dynamo_db = DynamoDB(dynamo_resource)
+dynamo_db = DynamoDB()
 
 # Calling the AWSServices
 aws_services = AWSServices()
