@@ -3,7 +3,8 @@ import boto3
 
 class TranslationService:
     def __init__(self):
-        self.client = boto3.client('translate')
+        self.client = boto3.client('translate', aws_access_key_id='AKIA4MTWGWVBKGMRIBZA',
+                                   aws_secret_access_key='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')
 
     def translate_text(self, text, source_language='auto', target_language='en'):
         """
