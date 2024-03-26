@@ -115,7 +115,12 @@ class UserTable:
     def delete_user(self, user_data):
         try:
             response = self.table.delete_item(
-                Key={'Email': user_data['Email'], 'Password': user_data['Password']})
-            return Response(body={'message': 'User deleted successfully!'}, status_code=200)
+                Key={'Email': user_data['Email']},
+                ReturnValues='ALL_OLD'
+            )
+            if 'Attributes' in response:
+                return Response(body={'message': 'User deleted successfully!'}, status_code=200)
+            else:
+                return Response(body={'error': 'User not found'}, status_code=404)
         except Exception as e:
             return Response(body={'error': str(e)}, status_code=500)
