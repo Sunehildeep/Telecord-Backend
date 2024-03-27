@@ -122,3 +122,20 @@ def chats():
 @app.route('/chats/{communityId}', methods=['GET'], cors=True)
 def get_chats(communityId):
     return dynamo_db.getChats(communityId)
+
+
+@app.route('/deleteCommunity', methods=['DELETE'], cors=True)
+def delete_community():
+    request = app.current_request.json_body
+    return dynamo_db.deleteCommunity(request)
+
+@app.route('/updateUsername', methods=['PUT'], cors=True)
+def update_username():
+    request = app.current_request
+    return dynamo_db.update_username(request.json_body)
+
+@app.route('/updateUserProfilePicture', methods=['PUT'], cors=True)
+def update_profile_picture():
+    request = app.current_request
+    print("Request", request.json_body)
+    return dynamo_db.update_profile_picture(request.json_body)

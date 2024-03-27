@@ -76,3 +76,12 @@ class DynamoDB:
 
     def getChats(self, communityId):
         return self.chats_table.get_chats(communityId)
+    
+    def deleteCommunity(self, data):
+        return self.community_table.delete_community(data)
+    
+    def update_username(self, data):
+        return self.user_table.update_username(data)
+    
+    def update_profile_picture(self, data):
+        return self.user_table.update_profile_picture(data)
