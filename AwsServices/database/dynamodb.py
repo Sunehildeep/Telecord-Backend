@@ -2,12 +2,18 @@ from database.Models.UserTable import UserTable
 from database.Models.CommunityTable import CommunityTable
 from database.Models.ChatsTable import ChatsTable
 import boto3
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
+
+aws_access_key = os.getenv('AWS_ACCESS_KEY_ID')
+aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
 
 class DynamoDB:
     def __init__(self):
-        self.dynamo_resource = boto3.resource('dynamodb', aws_access_key_id='AKIA4MTWGWVBKGMRIBZA',
-                                              aws_secret_access_key='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')
+        self.dynamo_resource = boto3.resource('dynamodb', aws_access_key_id=aws_access_key,
+                                              aws_secret_access_key=aws_secret_access_key)
 
         self.user_table = UserTable(self.dynamo_resource)
         self.user_created_table = self.user_table.create_table('Users')
