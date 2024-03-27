@@ -1,4 +1,5 @@
 import boto3
+from chalice import Response
 
 
 class VoiceOver(object):
@@ -24,4 +25,5 @@ class VoiceOver(object):
             VoiceId=voice_id
         )
         audio_stream = response['AudioStream'].read()
-        return audio_stream
+        return Response(body=audio_stream, headers={'Content-Type': 'audio/mpeg'},
+                        status_code=200)
