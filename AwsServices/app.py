@@ -2,6 +2,7 @@ from chalice import Chalice
 import boto3
 from database.dynamodb import DynamoDB
 from aws_services import AWSServices
+import base64
 
 app = Chalice(app_name='AwsServices')
 
@@ -96,8 +97,14 @@ def translate():
 
 @app.route('/upload', methods=['POST'], cors=True)
 def upload():
+    print("Request", app.current_request.json_body)
     request = app.current_request
-    return aws_services.upload_file(request.json_body['file_bytes'], request.json_body['file_name'])
+    file_name = request.json_body['file_name']
+    print("File Name", file_name)
+    file_bytes = base64.b64decode(request.json_body['file_bytes'])
+
+    print("File Bytes", file_bytes)
+    return aws_services.upload_file(file_bytes, file_name)
 
 
 @app.route('/audio', methods=['POST'], cors=True)
