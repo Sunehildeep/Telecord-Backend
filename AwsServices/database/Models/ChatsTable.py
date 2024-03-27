@@ -1,4 +1,5 @@
 from botocore.exceptions import ClientError
+from chalice import Response
 
 
 class ChatsTable:
@@ -45,3 +46,27 @@ class ChatsTable:
                 raise
         else:
             return self.table
+
+    def put_chat(self, chat):
+        """
+        Adds a new chat to the table.
+
+        :param chat: A dictionary with the chat data.
+        :return: The response from the put_item call.
+        """
+        response = self.table.put_item(Item=chat)
+        return response
+
+    def get_chats(self, communityId):
+        """
+        Gets all chats for a given community.
+
+        :param communityId: The ID of the community to get chats for.
+        :return: The response from the query call.
+        """
+        # Get all chats, then filter by communityId and sort by Time
+        response = self.table.scan()
+        chats = response['Items']
+        chats = [chat for chat in chats if chat['CommunityId'] == communityId]
+        chats.sort(key=lambda chat: chat['Time'])
+        return Response(body=chats, status_code=200)

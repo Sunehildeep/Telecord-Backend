@@ -64,3 +64,9 @@ class DynamoDB:
 
     def searchCommunity(self, query):
         return self.community_table.search_community(query)
+
+    def saveChat(self, msg):
+        return self.chats_table.put_chat(msg)
+
+    def getChats(self, communityId):
+        return self.chats_table.get_chats(communityId)

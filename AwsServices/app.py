@@ -104,3 +104,14 @@ def upload():
 def audio():
     request = app.current_request
     return aws_services.audio(request.json_body['text'])
+
+
+@app.route('/chats', methods=['POST'], cors=True)
+def chats():
+    request = app.current_request
+    return dynamo_db.saveChat(request.json_body)
+
+
+@app.route('/chats/{communityId}', methods=['GET'], cors=True)
+def get_chats(communityId):
+    return dynamo_db.getChats(communityId)
