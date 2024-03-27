@@ -74,10 +74,9 @@ class UserTable:
             response = self.table.update_item(
                 Key={'Email': user_data['Email'],
                      'Password': user_data['Password']},
-                UpdateExpression="set FirstName=:f, LastName=:l, ProfilePic=:p",
+                UpdateExpression="set Username=:userName, ProfilePic=:p",
                 ExpressionAttributeValues={
-                    ':f': user_data['FirstName'],
-                    ':l': user_data['LastName'],
+                    ':userName': user_data['Username'],
                     ':p': user_data['ProfilePic']
                 },
                 ReturnValues='UPDATED_NEW')
@@ -122,5 +121,17 @@ class UserTable:
                 return Response(body={'message': 'User deleted successfully!'}, status_code=200)
             else:
                 return Response(body={'error': 'User not found'}, status_code=404)
+        except Exception as e:
+            return Response(body={'error': str(e)}, status_code=500)
+        
+    def update_profile_picture(self, data):
+        try:
+            response = self.table.update_item(
+                Key={'Email': data['Email']},
+                UpdateExpression="set ProfilePicture=:p",
+                ExpressionAttributeValues={":p": data['ProfilePicture']},
+                ReturnValues='UPDATED_NEW'
+            )
+            return Response(body=response, status_code=200)
         except Exception as e:
             return Response(body={'error': str(e)}, status_code=500)

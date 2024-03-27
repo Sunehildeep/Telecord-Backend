@@ -141,3 +141,22 @@ class CommunityTable:
         )
 
         return Response(body=response, status_code=200)
+    
+    def delete_community(self, data):
+        """
+        Deletes a community.
+
+        :param data: A dictionary with the community details.
+        :return: The response from the delete_item call.
+        """
+        try:
+            response = self.table.delete_item(Key={"CommunityId": data["CommunityId"]})
+
+            if "Attributes" in response:
+                    return Response(body={'message': 'Profile updated successfully!'}, status_code=200)
+            else:
+                    return Response(body={'error': 'Invalid credentials!'}, status_code=401)
+        
+        except Exception as e:
+            return Response(body={'error': str(e)}, status_code=500)
+    
