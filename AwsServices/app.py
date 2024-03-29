@@ -88,13 +88,6 @@ def leave_community():
     return dynamo_db.leave_community(request.json_body)
 
 
-@app.route('/translate', methods=['POST'], cors=True)
-def translate():
-    # requires a text, lang, and source lang
-    request = app.current_request
-    return aws_services.translate_text(request.json_body['translated_text'], request.json_body['source_lang'], request.json_body['target_lang'])
-
-
 @app.route('/upload', methods=['POST'], cors=True)
 def upload():
     print("Request", app.current_request.json_body)
@@ -129,13 +122,27 @@ def delete_community():
     request = app.current_request.json_body
     return dynamo_db.deleteCommunity(request)
 
+
 @app.route('/updateUsername', methods=['PUT'], cors=True)
 def update_username():
     request = app.current_request
     return dynamo_db.update_username(request.json_body)
+
 
 @app.route('/updateUserProfilePicture', methods=['PUT'], cors=True)
 def update_profile_picture():
     request = app.current_request
     print("Request", request.json_body)
     return dynamo_db.update_profile_picture(request.json_body)
+
+
+@app.route('/updateCommunityImage', methods=['PUT'], cors=True)
+def update_community_image():
+    request = app.current_request
+    return dynamo_db.update_community_image(request.json_body)
+
+
+@app.route('/translate', methods=['POST'], cors=True)
+def translate():
+    request = app.current_request
+    return aws_services.translate_text(request.json_body['chats'], request.json_body['source_lang'], request.json_body['target_lang'])
