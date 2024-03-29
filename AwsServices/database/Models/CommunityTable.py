@@ -141,7 +141,7 @@ class CommunityTable:
         )
 
         return Response(body=response, status_code=200)
-    
+
     def delete_community(self, data):
         """
         Deletes a community.
@@ -150,13 +150,29 @@ class CommunityTable:
         :return: The response from the delete_item call.
         """
         try:
-            response = self.table.delete_item(Key={"CommunityId": data["CommunityId"]})
+            response = self.table.delete_item(
+                Key={"CommunityId": data["CommunityId"]})
 
             if "Attributes" in response:
-                    return Response(body={'message': 'Profile updated successfully!'}, status_code=200)
+                return Response(body={'message': 'Profile updated successfully!'}, status_code=200)
             else:
-                    return Response(body={'error': 'Invalid credentials!'}, status_code=401)
-        
+                return Response(body={'error': 'Invalid credentials!'}, status_code=401)
+
         except Exception as e:
             return Response(body={'error': str(e)}, status_code=500)
-    
+
+    def update_community_image(self, data):
+        """
+        Updates the image of a community.
+
+        :param data: A dictionary with the community details.
+        :return: The response from the update_item call.
+        """
+        response = self.table.update_item(
+            Key={"CommunityId": data["CommunityId"]},
+            UpdateExpression="SET CommunityImage = :image",
+            ExpressionAttributeValues={":image": data["CommunityImage"]},
+            ReturnValues="UPDATED_NEW",
+        )
+
+        return Response(body=response, status_code=200)

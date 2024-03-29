@@ -10,6 +10,7 @@ load_dotenv()
 aws_access_key = os.getenv('AWS_ACCESS_KEY_ID')
 aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY')
 
+
 class DynamoDB:
     def __init__(self):
         self.dynamo_resource = boto3.resource('dynamodb', aws_access_key_id=aws_access_key,
@@ -76,12 +77,15 @@ class DynamoDB:
 
     def getChats(self, communityId):
         return self.chats_table.get_chats(communityId)
-    
+
     def deleteCommunity(self, data):
         return self.community_table.delete_community(data)
-    
+
     def update_username(self, data):
         return self.user_table.update_username(data)
-    
+
     def update_profile_picture(self, data):
         return self.user_table.update_profile_picture(data)
+
+    def update_community_image(self, data):
+        return self.community_table.update_community_image(data)
