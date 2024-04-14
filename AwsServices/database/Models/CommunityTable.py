@@ -56,8 +56,11 @@ class CommunityTable:
         :param community: A dictionary with the community data.
         :return: The response from the put_item call.
         """
-        response = self.table.put_item(Item=community)
-        return Response(body=response, status_code=201)
+        try:
+            response = self.table.put_item(Item=community)
+            return Response(body=response, status_code=201)
+        except Exception as e:
+            return Response(body={'error': str(e)}, status_code=500)
 
     def get_community(self, username):
         """
@@ -66,12 +69,15 @@ class CommunityTable:
         :param username: The username of the user.
         :return: A list of community details where the user is a member.
         """
-        response = self.table.scan(
-            FilterExpression=Attr("GroupMembers").contains(username)
-        )
-        communities = response.get("Items", [])
+        try:
+            response = self.table.scan(
+                FilterExpression=Attr("GroupMembers").contains(username)
+            )
+            communities = response.get("Items", [])
 
-        return Response(body=communities, status_code=200)
+            return Response(body=communities, status_code=200)
+        except Exception as e:
+            return Response(body={'error': str(e)}, status_code=500)
 
     def get_community_by_id(self, community_id):
         """
@@ -80,10 +86,13 @@ class CommunityTable:
         :param community_id: The ID of the community.
         :return: The community details.
         """
-        response = self.table.get_item(Key={"CommunityId": community_id})
-        community = response.get("Item", {})
+        try:
+            response = self.table.get_item(Key={"CommunityId": community_id})
+            community = response.get("Item", {})
 
-        return Response(body=community, status_code=200)
+            return Response(body=community, status_code=200)
+        except Exception as e:
+            return Response(body={'error': str(e)}, status_code=500)
 
     def search_community(self, query):
         """
@@ -92,12 +101,15 @@ class CommunityTable:
         :param query: The query to search for.
         :return: The community details.
         """
-        response = self.table.scan(
-            FilterExpression=Attr("CommunityName").contains(query)
-        )
-        communities = response.get("Items", [])
+        try:
+            response = self.table.scan(
+                FilterExpression=Attr("CommunityName").contains(query)
+            )
+            communities = response.get("Items", [])
 
-        return Response(body=communities, status_code=200)
+            return Response(body=communities, status_code=200)
+        except Exception as e:
+            return Response(body={'error': str(e)}, status_code=500)
 
     def join_community(self, data):
         """
@@ -106,14 +118,17 @@ class CommunityTable:
         :param data: A dictionary with the user and community details.
         :return: The response from the update_item call.
         """
-        response = self.table.update_item(
-            Key={"CommunityId": data["CommunityId"]},
-            UpdateExpression="SET GroupMembers = list_append(GroupMembers, :user)",
-            ExpressionAttributeValues={":user": [data["Username"]]},
-            ReturnValues="UPDATED_NEW",
-        )
+        try:
+            response = self.table.update_item(
+                Key={"CommunityId": data["CommunityId"]},
+                UpdateExpression="SET GroupMembers = list_append(GroupMembers, :user)",
+                ExpressionAttributeValues={":user": [data["Username"]]},
+                ReturnValues="UPDATED_NEW",
+            )
 
-        return Response(body=response, status_code=200)
+            return Response(body=response, status_code=200)
+        except Exception as e:
+            return Response(body={'error': str(e)}, status_code=500)
 
     def leave_community(self, data):
         """
@@ -122,25 +137,28 @@ class CommunityTable:
         :param data: A dictionary with the user and community details.
         :return: The response from the update_item call.
         """
-        # First, retrieve the index of the username in the GroupMembers list
-        community = self.table.get_item(
-            Key={"CommunityId": data["CommunityId"]})
-        group_members = community.get("Item", {}).get("GroupMembers", [])
-
         try:
-            index = group_members.index(data["Username"])
-        except ValueError:
-            print("User not found in the community")
-            return Response(body={"message": "User not found in the community"}, status_code=404)
+        # First, retrieve the index of the username in the GroupMembers list
+            community = self.table.get_item(
+                Key={"CommunityId": data["CommunityId"]})
+            group_members = community.get("Item", {}).get("GroupMembers", [])
 
-        # Now, remove the user from the GroupMembers list using the retrieved index
-        response = self.table.update_item(
-            Key={"CommunityId": data["CommunityId"]},
-            UpdateExpression="REMOVE GroupMembers[%s]" % index,
-            ReturnValues="UPDATED_NEW",
-        )
+            try:
+                index = group_members.index(data["Username"])
+            except ValueError:
+                print("User not found in the community")
+                return Response(body={"message": "User not found in the community"}, status_code=404)
 
-        return Response(body=response, status_code=200)
+            # Now, remove the user from the GroupMembers list using the retrieved index
+            response = self.table.update_item(
+                Key={"CommunityId": data["CommunityId"]},
+                UpdateExpression="REMOVE GroupMembers[%s]" % index,
+                ReturnValues="UPDATED_NEW",
+            )
+
+            return Response(body=response, status_code=200)
+        except Exception as e:
+            return Response(body={'error': str(e)}, status_code=500)
 
     def delete_community(self, data):
         """
@@ -168,11 +186,14 @@ class CommunityTable:
         :param data: A dictionary with the community details.
         :return: The response from the update_item call.
         """
-        response = self.table.update_item(
-            Key={"CommunityId": data["CommunityId"]},
-            UpdateExpression="SET CommunityImage = :image",
-            ExpressionAttributeValues={":image": data["CommunityImage"]},
-            ReturnValues="UPDATED_NEW",
-        )
+        try:
+            response = self.table.update_item(
+                Key={"CommunityId": data["CommunityId"]},
+                UpdateExpression="SET CommunityImage = :image",
+                ExpressionAttributeValues={":image": data["CommunityImage"]},
+                ReturnValues="UPDATED_NEW",
+            )
 
-        return Response(body=response, status_code=200)
+            return Response(body=response, status_code=200)
+        except Exception as e:
+            return Response(body={'error': str(e)}, status_code=500)

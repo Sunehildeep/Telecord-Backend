@@ -7,6 +7,8 @@ name = "pypi"
 boto3 = "*"
 chalice = "*"
 logger = "*"
+bcrypt = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
