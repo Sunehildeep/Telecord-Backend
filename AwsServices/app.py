@@ -3,6 +3,7 @@ import boto3
 from database.dynamodb import DynamoDB
 from aws_services import AWSServices
 import base64
+import bcrypt
 
 app = Chalice(app_name='AwsServices')
 
@@ -21,12 +22,20 @@ aws_services = AWSServices()
 def sign_up():
     request = app.current_request
     body = request.json_body
+    salt = bcrypt.gensalt()
+
+    hashed_pswd = bcrypt.hashpw(body['Password'].encode('utf-8'), salt)
+    body['Password'] = hashed_pswd.decode('utf-8')
+    body['Salt'] = salt.decode('utf-8')
+    
     return dynamo_db.signUp(body)
 
 
 @app.route('/login', methods=['POST'], cors=True)
 def login():
     request = app.current_request
+    print("Request: ", request.json_body)
+
     req = dynamo_db.login(request.json_body)
     return req
 

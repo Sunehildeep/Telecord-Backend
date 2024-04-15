@@ -54,8 +54,11 @@ class ChatsTable:
         :param chat: A dictionary with the chat data.
         :return: The response from the put_item call.
         """
-        response = self.table.put_item(Item=chat)
-        return response
+        try:
+            response = self.table.put_item(Item=chat)
+            return response
+        except Exception as e:
+            return Response(body={'error': str(e)}, status_code=500)
 
     def get_chats(self, communityId):
         """
@@ -64,9 +67,12 @@ class ChatsTable:
         :param communityId: The ID of the community to get chats for.
         :return: The response from the query call.
         """
+        try:
         # Get all chats, then filter by communityId and sort by Time
-        response = self.table.scan()
-        chats = response['Items']
-        chats = [chat for chat in chats if chat['CommunityId'] == communityId]
-        chats.sort(key=lambda chat: chat['Time'])
-        return Response(body=chats, status_code=200)
+            response = self.table.scan()
+            chats = response['Items']
+            chats = [chat for chat in chats if chat['CommunityId'] == communityId]
+            chats.sort(key=lambda chat: chat['Time'])
+            return Response(body=chats, status_code=200)
+        except Exception as e:
+            return Response(body={'error': str(e)}, status_code=500)

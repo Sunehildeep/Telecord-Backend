@@ -1,6 +1,6 @@
 from botocore.exceptions import ClientError
 from chalice import Response
-
+import bcrypt
 
 class UserTable:
     def __init__(self, dyn_resource):
@@ -60,7 +60,9 @@ class UserTable:
                 Key={'Email': user_data['Email']})
             if 'Item' in response:
                 # Compare the password
-                if response['Item']['Password'] == user_data['Password']:
+                a = bcrypt.checkpw(user_data['Password'].encode('utf-8'), response['Item']['Password'].encode('utf-8'))
+                print("a", a)
+                if a:
                     return Response(body={'user': response['Item'], 'message': 'User logged in successfully!'}, status_code=200)
                 else:
                     return Response(body={'error': 'Invalid credentials!'}, status_code=401)
